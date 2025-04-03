@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { isAuthenticated } from "@/lib/action/auth.action";
 import { redirect } from "next/dist/server/api-utils";
 
-const RootLayout = ({ children }: { children: ReactNode }) => {
+const RootLayout = async ({ children }: { children: ReactNode }) => {
   const isUserAuthenticated = await isAuthenticated();
 
   if (!isUserAuthenticated) redirect("/sign-in");
