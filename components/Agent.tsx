@@ -63,28 +63,14 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
   }, [messages, callStatus, type, userId]);
 
   const handleCall = async () => {
-    try {
-      setCallStatus(CallStatus.CONNECTING);
+    setCallStatus(CallStatus.CONNECTING);
 
-      if (!process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID) {
-        throw new Error("VAPI workflow ID is not configured");
-      }
-
-      console.log(
-        "Starting VAPI call with workflow ID:",
-        process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID
-      );
-
-      await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID, {
-        variableValues: {
-          username: userName,
-          userid: userId,
-        },
-      });
-    } catch (error) {
-      console.error("Error in handleCall:", error);
-      setCallStatus(CallStatus.INACTIVE);
-    }
+    await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
+      variableValues: {
+        username: userName,
+        userid: userId,
+      },
+    });
   };
 
   const handleDisconnect = async () => {
