@@ -26,7 +26,6 @@ export async function getLatestInterviews(
   const { userId, limit = 20 } = params;
 
   try {
-    // First get all finalized interviews
     const interviews = await db
       .collection("interviews")
       .where("finalized", "==", true)

@@ -1,18 +1,26 @@
 import Agent from "@/components/Agent";
 import DisplayTechIcons from "@/components/DisplayTechIcons";
 import { getCurrentUser } from "@/lib/action/auth.action";
-import { getInterviewsById } from "@/lib/action/general.action";
+import {
+  getFeedbackByInterviewId,
+  getInterviewsById,
+} from "@/lib/action/general.action";
 import { getRandomInterviewCover } from "@/lib/utils";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import React from "react";
 
-const Page = async ({ params }: RouteParams) => {
+const InterviewDetails = async ({ params }: RouteParams) => {
   const { id } = await params;
   const user = await getCurrentUser();
   const interview = await getInterviewsById(id);
 
   if (!interview) redirect("/");
+
+  const feedback = await getFeedbackByInterviewId({
+    interviewId: id,
+    userId: user?.id!,
+  });
 
   return (
     <>
@@ -24,6 +32,7 @@ const Page = async ({ params }: RouteParams) => {
               alt="cover-image"
               width={40}
               height={40}
+              className="rounded-full object-cover size-[40px]"
             />
             <h3 className="capitalize">{interview.role} Interview</h3>
           </div>
@@ -37,14 +46,15 @@ const Page = async ({ params }: RouteParams) => {
       </div>
 
       <Agent
-        userName={user?.name || ""}
+        userName={user?.name!}
         userId={user?.id}
         interviewId={id}
         type="interview"
         questions={interview.questions}
+        feedbackId={feedback?.id}
       />
     </>
   );
 };
 
-export default Page;
+export default InterviewDetails;

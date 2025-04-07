@@ -11,12 +11,10 @@ export async function signUp(params: SignUpParams) {
   try {
     const userRecord = await db.collection("users").doc(uid).get();
 
-    console.log(userRecord);
-
     if (userRecord.exists) {
       return {
         success: false,
-        message: "User already exists. Please sign in instead.",
+        message: "User already exists. Please sign in.",
       };
     }
 
@@ -29,10 +27,10 @@ export async function signUp(params: SignUpParams) {
       success: true,
       message: "Account created successfully. Please sign in.",
     };
-  } catch (e: any) {
+  } catch (error: any) {
     console.error("Error creating a user", e);
 
-    if (e.code === "auth/email-already-exists") {
+    if (error.code === "auth/email-already-exists") {
       return {
         success: false,
         message: "This email is already in use.",
@@ -41,7 +39,7 @@ export async function signUp(params: SignUpParams) {
 
     return {
       success: false,
-      message: "Failed to create an account",
+      message: "Failed to create an account. Please try again.",
     };
   }
 }
@@ -60,14 +58,20 @@ export async function signIn(params: SignInParams) {
     }
 
     await setSessionCookie(idToken);
-  } catch (e) {
-    console.log(e);
+  } catch (error: any) {
+    console.log("");
 
     return {
       success: false,
-      message: "Failed to log into an account.",
+      message: "Failed to log into an account. Please try again.",
     };
   }
+}
+
+export async function signOut() {
+  const cookieStore = await cookies();
+
+  cookieStore.delete("session");
 }
 
 export async function setSessionCookie(idToken: string) {
@@ -107,8 +111,8 @@ export async function getCurrentUser(): Promise<User | null> {
       ...userRecord.data(),
       id: userRecord.id,
     } as User;
-  } catch (e) {
-    console.log(e);
+  } catch (error) {
+    console.log(error);
 
     return null;
   }
